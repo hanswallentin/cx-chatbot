@@ -146,6 +146,10 @@ seed:
       name: Sam Okafor
       email: sam.okafor@example.com
       created_at: "2026-02-20"
+    - customer_id: 5
+      name: Hans Wallentin
+      email: hans.wallentin@gmail.com
+      created_at: "2026-08-16"
 
   books:
     - book_id: 1
@@ -876,3 +880,24 @@ seed:
       status: refunded
       order_date: "2026-05-01"
       tracking_number: 1Z999DD40123456790
+    - order_id: 5001
+      customer_id: 5
+      book_id: 29
+      quantity: 1
+      status: shipped
+      order_date: "2026-08-10"
+      tracking_number: 1Z999EE50123456791
+    - order_id: 5002
+      customer_id: 5
+      book_id: 15
+      quantity: 2
+      status: placed
+      order_date: "2026-08-14"
+      tracking_number: null
+    - order_id: 5003
+      customer_id: 5
+      book_id: 61
+      quantity: 1
+      status: shipped
+      order_date: "2026-08-12"
+      tracking_number: 1Z999EE50123456792
