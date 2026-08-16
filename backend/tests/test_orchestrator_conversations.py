@@ -47,7 +47,7 @@ async def test_multi_turn_return_flow_gated_on_required_info():
         },
         "initiate_return": {"order": {"order_id": 3001, "customer_id": 3, "status": "mixed", "items": []}},
     }
-    orchestrator, anthropic, mcp = build_orchestrator(script, tool_responses)
+    orchestrator, llm, mcp = build_orchestrator(script, tool_responses)
 
     reply1 = await orchestrator.handle_message("s1", "Hi, I'd like to return an order. My email is elena.novak@example.com")
     assert "order number" in reply1.lower()
@@ -86,7 +86,7 @@ async def test_tool_call_grounds_order_status_reply():
             }
         },
     }
-    orchestrator, anthropic, mcp = build_orchestrator(script, tool_responses)
+    orchestrator, llm, mcp = build_orchestrator(script, tool_responses)
 
     reply = await orchestrator.handle_message(
         "s2", "My email is marcus.chen@example.com, what's the status of order 2001?"
@@ -120,7 +120,7 @@ async def test_clarifying_question_for_ambiguous_my_order():
             "count": 2,
         },
     }
-    orchestrator, anthropic, mcp = build_orchestrator(script, tool_responses)
+    orchestrator, llm, mcp = build_orchestrator(script, tool_responses)
 
     reply = await orchestrator.handle_message("s3", "My email is marcus.chen@example.com. What's going on with my order?")
 

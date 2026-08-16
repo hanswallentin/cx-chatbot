@@ -28,12 +28,12 @@ services:
     port: 8080
 
 llm:
-  provider: anthropic
+  provider: openai
   # Main conversational model used for the support-agent tool-use loop.
-  model: claude-sonnet-5
+  model: gpt-5.5
   # Cheaper/faster model used only for guardrail classification calls.
-  guardrail_model: claude-haiku-4-5-20251001
-  api_key_env: ANTHROPIC_API_KEY
+  guardrail_model: gpt-5.4-mini
+  api_key_env: OPENAI_API_KEY
   max_tokens: 1024
   # Maximum number of tool-use round-trips per user turn before the
   # orchestrator forces a final text reply (loop-safety valve).
@@ -47,8 +47,9 @@ feature_flags:
   # If false, the backend skips the guardrails classifier entirely
   # (useful for local debugging of the raw tool-use loop).
   guardrails_enabled: true
-  # If false and no ANTHROPIC_API_KEY resolves, the backend refuses to
-  # start the chat endpoint instead of falling back to mocked responses.
+  # If false and no LLM API key (llm.api_key_env) resolves, the backend
+  # refuses to start the chat endpoint instead of falling back to mocked
+  # responses.
   allow_mock_llm_fallback: true
 
 mcp:
@@ -101,9 +102,8 @@ policy:
 
 guardrails:
   enabled: true
-  # Model used to classify messages; kept separate from llm.model so it can
-  # be tuned/cheapened independently.
-  classifier_model_env_fallback: claude-haiku-4-5-20251001
+  # The model used to classify messages is llm.guardrail_model, kept
+  # separate from llm.model so it can be tuned/cheapened independently.
   # strict: block on any plausible match; moderate: block only on clear,
   # confident matches. Purely a prompt-tuning knob for the classifier.
   sensitivity: strict

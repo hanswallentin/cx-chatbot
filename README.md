@@ -1,6 +1,6 @@
 # Bookly Customer Support Agent
 
-A customer support chat agent for Bookly, a fictional online bookstore. Handles order status, returns/refunds, and general policy questions (shipping, returns, password reset) through a real LLM (Anthropic Claude) with tool use, backed by a REST API and SQLite database, and fronted by a single-page chat UI.
+A customer support chat agent for Bookly, a fictional online bookstore. Handles order status, returns/refunds, and general policy questions (shipping, returns, password reset) through a real LLM (OpenAI) with tool use, backed by a REST API and SQLite database, and fronted by a single-page chat UI.
 
 ## Architecture
 
@@ -10,7 +10,7 @@ frontend (nginx + static HTML/JS)
    v
 backend/orchestrator (FastAPI)
    |  conversation loop, session state, system prompt, guardrails
-   |  Anthropic messages API (tool use)
+   |  OpenAI chat completions API (tool/function calling)
    v
 mcp-server (MCP tools over streamable-http)
    |  search_books, get_customer, find_customer_orders,
@@ -29,7 +29,7 @@ Five services, five directories: [db/](db/), [api/](api/), [mcp-server/](mcp-ser
 
 ```bash
 cp .env.example .env
-# edit .env and set ANTHROPIC_API_KEY (optional — see "no API key" below)
+# edit .env and set OPENAI_API_KEY (optional — see "no API key" below)
 docker compose up --build
 ```
 
@@ -65,7 +65,7 @@ cp .env.example .env
 ```
 
 Fill in `.env`:
-- `ANTHROPIC_API_KEY` — get one from the Anthropic Console. Without it, the backend starts in a mocked-response fallback mode (clearly logged) instead of crashing — fine for exercising the plumbing, but you won't get real conversations or real guardrail classification until a key is set.
+- `OPENAI_API_KEY` — get one from the OpenAI platform dashboard. Without it, the backend starts in a mocked-response fallback mode (clearly logged) instead of crashing — fine for exercising the plumbing, but you won't get real conversations or real guardrail classification until a key is set.
 - `DATABASE_PATH` / `LOG_LEVEL` — sane defaults are already set; only change if you know why.
 
 First run seeds the database automatically — `db-init` runs once on `docker compose up`, creates the schema, and loads the seed data defined in `config.yaml`'s `seed:` section (customers, books, orders). There's nothing else to run by hand.
@@ -94,7 +94,7 @@ Everything non-secret lives in [config.yaml](config.yaml) at the repo root. Each
 | `guardrails` | backend | categories, sensitivity, decline message, logging |
 | `seed` | db-init | customers/books/orders loaded on first run |
 
-**Secrets are never in `config.yaml`.** Instead of a value, secret-bearing keys hold the *name* of an environment variable, e.g. `llm.api_key_env: ANTHROPIC_API_KEY`. The service reads `os.environ[<that name>]`, and the actual value comes from `.env` locally or your cloud provider's secret manager in production — the mapping in `config.yaml` doesn't change between environments, only where the env var's value comes from.
+**Secrets are never in `config.yaml`.** Instead of a value, secret-bearing keys hold the *name* of an environment variable, e.g. `llm.api_key_env: OPENAI_API_KEY`. The service reads `os.environ[<that name>]`, and the actual value comes from `.env` locally or your cloud provider's secret manager in production — the mapping in `config.yaml` doesn't change between environments, only where the env var's value comes from.
 
 To override a value per environment without touching `config.yaml`: mount a different `config.yaml` (e.g. `config.prod.yaml`) at the same `/config.yaml` path via the `CONFIG_PATH` env var, or override specific env vars directly (e.g. set `MCP_SERVER_URL` to bypass `services.mcp_server.internal_url`).
 
@@ -106,7 +106,7 @@ To override a value per environment without touching `config.yaml`: mount a diff
 
 One command, no Docker required: creates/reuses a local `.venv`, installs all three services' dependencies, and runs the full `pytest` suite — API unit tests, MCP tool wrapper tests, and backend conversation + guardrail tests — against disposable fixtures/fakes. See `api/tests/`, `mcp-server/tests/`, `backend/tests/`.
 
-The backend's conversation and guardrail tests use a scripted fake Anthropic client and a fake MCP client (see `backend/tests/fakes.py`) rather than live model calls, so they're deterministic and don't require `ANTHROPIC_API_KEY`. They specifically cover: a multi-turn return flow that only calls `initiate_return` once order/item/reason are all known, an order-status answer grounded in a tool result, a clarifying question when "my order" is ambiguous, and adversarial prompts (hate speech, violence, sexual content, drugs, off-topic) being blocked before ever reaching a tool call.
+The backend's conversation and guardrail tests use a scripted fake LLM client and a fake MCP client (see `backend/tests/fakes.py`) rather than live model calls, so they're deterministic and don't require `OPENAI_API_KEY`. They specifically cover: a multi-turn return flow that only calls `initiate_return` once order/item/reason are all known, an order-status answer grounded in a tool result, a clarifying question when "my order" is ambiguous, and adversarial prompts (hate speech, violence, sexual content, drugs, off-topic) being blocked before ever reaching a tool call. `backend/tests/test_openai_client.py` separately covers the OpenAI wire-format adapter itself (tool-call parsing, message/history translation) against a fake `AsyncOpenAI`-shaped client.
 
 ## FAQ
 
@@ -120,7 +120,7 @@ Edit `llm.model` (main conversation model) or `llm.guardrail_model` (classifier 
 Add an entry under `seed.books` / `seed.customers` / `seed.orders` in `config.yaml`, then reset the database (see above). There's no admin UI in this prototype — seed data is the only way to add fixtures.
 
 **Why isn't the agent calling a tool?**
-Check the backend logs for `No ANTHROPIC_API_KEY resolved - running in mocked-LLM fallback mode` — in mock mode there's no real model, so nothing decides to call a tool. Otherwise, check that `mcp-server` is healthy (`docker compose ps`) and that the system prompt's tool list (built from `config.yaml`'s `mcp.tools`) matches what you expect — the model can only call tools it was told about.
+Check the backend logs for `No OPENAI_API_KEY resolved - running in mocked-LLM fallback mode` — in mock mode there's no real model, so nothing decides to call a tool. Otherwise, check that `mcp-server` is healthy (`docker compose ps`) and that the system prompt's tool list (built from `config.yaml`'s `mcp.tools`) matches what you expect — the model can only call tools it was told about.
 
 **How do I run a single service outside Docker for debugging?**
 Each service is a plain FastAPI (or, for mcp-server, a plain Python) app. From the repo root, with a venv containing that service's `requirements.txt` installed:
@@ -139,4 +139,4 @@ Edit `guardrails.categories` (add/remove/reword categories), `guardrails.sensiti
 
 - Session state is in-memory in the backend process — restarting the backend or running multiple replicas loses/splits conversation history. A production version would move this to Redis or a similar shared store.
 - No customer identity verification beyond "what email did you type" — a production version would authenticate the customer before disclosing order details.
-- The guardrails classifier's judgment (not just its plumbing) can only be verified live, with a real `ANTHROPIC_API_KEY` configured — the automated test suite proves the wiring and fail-closed behavior deterministically, not the model's classification accuracy.
+- The guardrails classifier's judgment (not just its plumbing) can only be verified live, with a real `OPENAI_API_KEY` configured — the automated test suite proves the wiring and fail-closed behavior deterministically, not the model's classification accuracy.

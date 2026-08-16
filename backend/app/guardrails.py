@@ -1,7 +1,7 @@
 """Guardrails layer: screens every inbound user message and every outbound
 assistant reply before it reaches the other side.
 
-Implemented as a moderation-endpoint-style check: a dedicated, cheap Claude
+Implemented as a moderation-endpoint-style check: a dedicated, cheap LLM
 call (kept separate from the main conversation model) classifies the text
 against the categories configured in config.yaml and returns a strict JSON
 verdict. No hand-rolled keyword filtering — categories, sensitivity, and
@@ -33,8 +33,8 @@ class GuardrailVerdict:
 class GuardrailsClassifier:
     def __init__(self, create_message, model: str, categories: list[dict], sensitivity: str, enabled: bool = True):
         """`create_message` is an async callable: (model, max_tokens, system, messages) -> Message-like object
-        with `.content` (list of blocks with `.text`). Kept generic so both the real Anthropic
-        client and test fakes satisfy it identically.
+        with `.content` (list of blocks with `.text`). Kept generic (see app/llm_types.py) so the real
+        OpenAI adapter, the mocked fallback, and test fakes all satisfy it identically.
         """
         self._create_message = create_message
         self.model = model

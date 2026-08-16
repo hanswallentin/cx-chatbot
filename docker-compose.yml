@@ -49,7 +49,7 @@ services:
     volumes:
       - ./config.yaml:/config.yaml:ro
     environment:
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       MCP_SERVER_URL: http://mcp-server:8100
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     depends_on:

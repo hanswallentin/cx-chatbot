@@ -1,11 +1,12 @@
-"""The conversation loop: guardrail the input, run the Anthropic tool-use
-loop against the MCP-backed tools, guardrail the output, persist history.
+"""The conversation loop: guardrail the input, run the LLM tool-use loop
+against the MCP-backed tools, guardrail the output, persist history.
 
 `create_message` and `mcp_client` are both injected so this class never
-constructs a real Anthropic/MCP connection itself — that happens once at
-app startup in main.py. Tests construct an Orchestrator directly with fakes
-satisfying the same two small interfaces, so scripted conversations run
-without any network access.
+constructs a real LLM/MCP connection itself — that happens once at app
+startup in main.py, where create_message is backed by the OpenAI adapter
+(app/openai_client.py) or the mocked fallback (app/mock_llm.py). Tests
+construct an Orchestrator directly with fakes satisfying the same two
+small interfaces, so scripted conversations run without any network access.
 """
 import json
 import logging

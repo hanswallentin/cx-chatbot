@@ -1,12 +1,13 @@
-"""Test doubles for the Anthropic client and the MCP tool client.
+"""Test doubles for the LLM client and the MCP tool client.
 
-Neither fake talks to a network. ScriptedAnthropic plays back a
-pre-written sequence of model turns so conversation tests are fully
-deterministic; FakeMCPClient records every tool invocation so tests can
-assert on exactly what was (or wasn't) called.
+Neither fake talks to a network. ScriptedLLM plays back a pre-written
+sequence of model turns so conversation tests are fully deterministic;
+FakeMCPClient records every tool invocation so tests can assert on exactly
+what was (or wasn't) called.
 """
-from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, Union
+
+from app.llm_types import LLMMessage, TextBlock, ToolUseBlock
 
 SAMPLE_TOOL_SCHEMAS = [
     {"name": "search_books", "description": "Search the catalog.", "input_schema": {"type": "object", "properties": {"query": {"type": "string"}}}},
@@ -17,46 +18,26 @@ SAMPLE_TOOL_SCHEMAS = [
 ]
 
 
-@dataclass
-class FakeTextBlock:
-    text: str
-    type: str = "text"
+def text_message(text: str) -> LLMMessage:
+    return LLMMessage(content=[TextBlock(text=text)], stop_reason="end_turn")
 
 
-@dataclass
-class FakeToolUseBlock:
-    id: str
-    name: str
-    input: dict
-    type: str = "tool_use"
+def tool_use_message(tool_use_id: str, name: str, tool_input: dict) -> LLMMessage:
+    return LLMMessage(content=[ToolUseBlock(id=tool_use_id, name=name, input=tool_input)], stop_reason="tool_use")
 
 
-@dataclass
-class FakeMessage:
-    content: list
-    stop_reason: str = "end_turn"
-
-
-def text_message(text: str) -> FakeMessage:
-    return FakeMessage(content=[FakeTextBlock(text=text)], stop_reason="end_turn")
-
-
-def tool_use_message(tool_use_id: str, name: str, tool_input: dict) -> FakeMessage:
-    return FakeMessage(content=[FakeToolUseBlock(id=tool_use_id, name=name, input=tool_input)], stop_reason="tool_use")
-
-
-class ScriptedAnthropic:
+class ScriptedLLM:
     """One create_message callable used for BOTH the main conversation and
-    the guardrails classifier, matching how the real app wires a single
-    Anthropic client to both roles (see backend/app/main.py). Routes on the
-    system prompt: guardrail calls (system mentions "content safety
-    classifier") get a fixed verdict; everything else pops the next
-    scripted turn off the conversation queue.
+    the guardrails classifier, matching how the real app wires a single LLM
+    client to both roles (see backend/app/main.py). Routes on the system
+    prompt: guardrail calls (system mentions "content safety classifier")
+    get a fixed verdict; everything else pops the next scripted turn off
+    the conversation queue.
     """
 
     def __init__(
         self,
-        conversation_script: list[FakeMessage],
+        conversation_script: list[LLMMessage],
         guardrail_verdict: str = '{"blocked": false, "category": null, "reason": "clean"}',
     ):
         self._script = list(conversation_script)
@@ -68,7 +49,7 @@ class ScriptedAnthropic:
         if "content safety classifier" in system:
             return text_message(self.guardrail_verdict)
         if not self._script:
-            raise AssertionError("ScriptedAnthropic ran out of scripted conversation turns")
+            raise AssertionError("ScriptedLLM ran out of scripted conversation turns")
         return self._script.pop(0)
 
 

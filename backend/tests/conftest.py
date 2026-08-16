@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).parents[1]))
 from app.guardrails import GuardrailsClassifier
 from app.orchestrator import Orchestrator
 from app.session_store import InMemorySessionStore
-from tests.fakes import SAMPLE_TOOL_SCHEMAS, FakeMCPClient, ScriptedAnthropic
+from tests.fakes import SAMPLE_TOOL_SCHEMAS, FakeMCPClient, ScriptedLLM
 
 DEFAULT_CATEGORIES = [
     {"key": "hate_speech", "description": "Hate speech or slurs."},
@@ -30,25 +30,25 @@ def build_orchestrator(
     guardrail_verdict='{"blocked": false, "category": null, "reason": "clean"}',
     guardrails_enabled=True,
 ):
-    anthropic = ScriptedAnthropic(conversation_script, guardrail_verdict=guardrail_verdict)
+    llm = ScriptedLLM(conversation_script, guardrail_verdict=guardrail_verdict)
     mcp_client = FakeMCPClient(tool_responses)
     guardrails = GuardrailsClassifier(
-        create_message=anthropic,
-        model="claude-haiku-4-5-20251001",
+        create_message=llm,
+        model="gpt-5.4-mini",
         categories=DEFAULT_CATEGORIES,
         sensitivity="strict",
         enabled=guardrails_enabled,
     )
     orchestrator = Orchestrator(
-        create_message=anthropic,
+        create_message=llm,
         mcp_client=mcp_client,
         guardrails=guardrails,
         session_store=InMemorySessionStore(),
         system_prompt="You are Bookly's customer support agent.",
         tool_schemas=SAMPLE_TOOL_SCHEMAS,
-        model="claude-sonnet-5",
+        model="gpt-5.5",
         block_message=BLOCK_MESSAGE,
         max_tokens=1024,
         max_tool_iterations=5,
     )
-    return orchestrator, anthropic, mcp_client
+    return orchestrator, llm, mcp_client

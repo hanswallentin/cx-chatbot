@@ -1,14 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
 
-from anthropic import AsyncAnthropic
 from fastapi import FastAPI
+from openai import AsyncOpenAI
 from pydantic import BaseModel
 
 from app.config import (
-    anthropic_api_key,
     feature_flags,
     guardrails_settings,
+    llm_api_key,
     llm_settings,
     log_level,
     mcp_server_url,
@@ -17,6 +17,7 @@ from app.config import (
 from app.guardrails import GuardrailsClassifier
 from app.mcp_client import MCPToolClient
 from app.mock_llm import mock_create_message
+from app.openai_client import build_create_message
 from app.orchestrator import Orchestrator
 from app.prompts import build_system_prompt
 from app.session_store import InMemorySessionStore
@@ -31,19 +32,19 @@ app_state: dict = {}
 async def lifespan(app: FastAPI):
     llm = llm_settings()
     flags = feature_flags()
-    api_key = anthropic_api_key()
+    api_key = llm_api_key()
 
     mcp_client = MCPToolClient(mcp_server_url())
     await mcp_client.connect()
     tool_schemas = await mcp_client.list_tool_schemas()
 
     if api_key:
-        create_message = AsyncAnthropic(api_key=api_key).messages.create
+        create_message = build_create_message(AsyncOpenAI(api_key=api_key))
     elif flags.get("allow_mock_llm_fallback", True):
-        logger.warning("No ANTHROPIC_API_KEY resolved - running in mocked-LLM fallback mode.")
+        logger.warning("No %s resolved - running in mocked-LLM fallback mode.", llm["api_key_env"])
         create_message = mock_create_message
     else:
-        raise RuntimeError("No ANTHROPIC_API_KEY configured and feature_flags.allow_mock_llm_fallback is false.")
+        raise RuntimeError(f"No {llm['api_key_env']} configured and feature_flags.allow_mock_llm_fallback is false.")
 
     guardrails_cfg = guardrails_settings()
     guardrails = GuardrailsClassifier(

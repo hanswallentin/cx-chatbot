@@ -11,7 +11,7 @@ def load_config() -> dict:
         return yaml.safe_load(f)
 
 
-def anthropic_api_key() -> str | None:
+def llm_api_key() -> str | None:
     config = load_config()
     return os.environ.get(config["llm"]["api_key_env"])
 

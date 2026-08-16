@@ -165,7 +165,7 @@ def build_architecture_slide(prs):
     boxes = [
         ("Frontend", "Single-page chat UI\n(HTML/CSS/JS)"),
         ("Backend /\nOrchestrator", "Conversation loop,\nsession state, system prompt"),
-        ("LLM\n(tool use)", "Claude decides:\nanswer, ask, or call a tool"),
+        ("LLM\n(tool use)", "The model decides:\nanswer, ask, or call a tool"),
         ("MCP Server", "5 scoped tools —\nnever raw SQL/routes"),
         ("REST API", "Owns all validation;\nonly thing touching the DB"),
         ("Database", "SQLite: customers,\nbooks, orders"),
@@ -281,7 +281,7 @@ def build_decisions_slide(prs):
         (
             "A dedicated guardrails layer\n(separate classifier call)",
             "Chose",
-            "A moderation-endpoint-style check — a separate, cheap Claude call — screens every inbound and "
+            "A moderation-endpoint-style check — a separate, cheap OpenAI call — screens every inbound and "
             "outbound message against configurable categories.",
             "Traded off",
             "Added latency (two extra model calls per turn) and cost, versus no screening or a hand-rolled "
