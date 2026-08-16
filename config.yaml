@@ -1,0 +1,258 @@
+# Bookly Customer Support Agent — central configuration.
+#
+# Every service loads only the section(s) it needs at startup. Nothing here
+# is a secret: secrets are referenced by *environment variable name* (the
+# `*_env` keys) and the real values are injected via .env locally or a cloud
+# secret manager in production. See README.md "Configuration" for details.
+
+database:
+  # Path inside the container; mounted from a shared named volume so
+  # db-init, and the api service (the only service allowed to touch it
+  # directly) see the same file.
+  path_env: DATABASE_PATH
+  default_path: /data/bookly.db
+
+services:
+  api:
+    internal_url: http://api:8000
+    port: 8000
+  mcp_server:
+    internal_url: http://mcp-server:8100
+    port: 8100
+    # MCP streamable-http endpoint path on the mcp-server container
+    mcp_path: /mcp
+  backend:
+    internal_url: http://backend:8200
+    port: 8200
+  frontend:
+    port: 8080
+
+llm:
+  provider: anthropic
+  # Main conversational model used for the support-agent tool-use loop.
+  model: claude-sonnet-5
+  # Cheaper/faster model used only for guardrail classification calls.
+  guardrail_model: claude-haiku-4-5-20251001
+  api_key_env: ANTHROPIC_API_KEY
+  max_tokens: 1024
+  # Maximum number of tool-use round-trips per user turn before the
+  # orchestrator forces a final text reply (loop-safety valve).
+  max_tool_iterations: 5
+
+logging:
+  level_env: LOG_LEVEL
+  default_level: INFO
+
+feature_flags:
+  # If false, the backend skips the guardrails classifier entirely
+  # (useful for local debugging of the raw tool-use loop).
+  guardrails_enabled: true
+  # If false and no ANTHROPIC_API_KEY resolves, the backend refuses to
+  # start the chat endpoint instead of falling back to mocked responses.
+  allow_mock_llm_fallback: true
+
+mcp:
+  tools:
+    - name: search_books
+      description: >
+        Search the Bookly catalog by title or author keyword. Use this to
+        answer "do you have X" or "books by Y" questions, or to help a
+        customer identify which book they mean before looking up an order.
+    - name: get_customer
+      description: >
+        Look up a customer by email address. Use this to resolve which
+        customer is chatting before looking up their orders, if the email
+        hasn't been established yet in the conversation.
+    - name: find_customer_orders
+      description: >
+        List all orders for a known customer_id. Use this when a customer
+        refers to "my order(s)" without giving an order number, so you can
+        see what they actually have before asking a clarifying question or
+        answering directly if there's only one candidate.
+    - name: get_order_status
+      description: >
+        Get the full status and line items for a specific order_id,
+        scoped to a customer_id for ownership validation. Use this whenever
+        a customer asks about the status, shipping, or contents of a
+        specific order they've named.
+    - name: initiate_return
+      description: >
+        Start a return for a specific line item (or whole order) once you
+        have the order_id, customer_id, which item (if the order has more
+        than one), and a reason. The API validates ownership and that the
+        order is in a returnable state — never call this until all of that
+        is confirmed with the customer.
+
+policy:
+  shipping: >
+    Standard shipping takes 3-5 business days within the continental US.
+    Expedited shipping (2 business days) is available at checkout for an
+    additional fee. Tracking numbers are emailed once an order ships.
+  returns: >
+    Books may be returned within 30 days of delivery if unused and in
+    original condition. Refunds are issued to the original payment method
+    within 5-7 business days after the returned item is received. Digital
+    or clearance items are final sale.
+  password_reset: >
+    To reset a Bookly account password, use the "Forgot password" link on
+    the sign-in page to receive a reset email. The reset link expires
+    after 24 hours. Contact support only if the reset email never arrives
+    after checking spam/junk folders.
+
+guardrails:
+  enabled: true
+  # Model used to classify messages; kept separate from llm.model so it can
+  # be tuned/cheapened independently.
+  classifier_model_env_fallback: claude-haiku-4-5-20251001
+  # strict: block on any plausible match; moderate: block only on clear,
+  # confident matches. Purely a prompt-tuning knob for the classifier.
+  sensitivity: strict
+  categories:
+    - key: hate_speech
+      description: Hate speech, slurs, or content demeaning a group based on identity.
+    - key: violence
+      description: Requests for or depictions of graphic violence, weapons instructions, or threats.
+    - key: sexual_content
+      description: Sexual or explicit content of any kind.
+    - key: drugs
+      description: Instructions for obtaining, making, or using illegal drugs.
+    - key: off_topic
+      description: >
+        Anything clearly unrelated to Bookly bookstore support (orders,
+        returns, books, shipping, account/password help) — e.g. requests
+        for coding help, medical/legal/financial advice, or general chit-chat
+        unrelated to Bookly, regardless of how the request is framed.
+  block_message: >
+    I'm not able to help with that here. I can help with Bookly orders,
+    returns, book questions, or your account — is there something along
+    those lines I can help with?
+  log_blocked_events: true
+
+seed:
+  customers:
+    - customer_id: 1
+      name: Priya Patel
+      email: priya.patel@example.com
+      created_at: "2025-11-02"
+    - customer_id: 2
+      name: Marcus Chen
+      email: marcus.chen@example.com
+      created_at: "2025-12-14"
+    - customer_id: 3
+      name: Elena Novak
+      email: elena.novak@example.com
+      created_at: "2026-01-09"
+    - customer_id: 4
+      name: Sam Okafor
+      email: sam.okafor@example.com
+      created_at: "2026-02-20"
+
+  books:
+    - book_id: 1
+      title: The Midnight Library
+      author: Matt Haig
+      isbn: "9780525559474"
+      price: 16.99
+      stock_qty: 42
+    - book_id: 2
+      title: Project Hail Mary
+      author: Andy Weir
+      isbn: "9780593135204"
+      price: 18.99
+      stock_qty: 30
+    - book_id: 3
+      title: Educated
+      author: Tara Westover
+      isbn: "9780399590504"
+      price: 15.99
+      stock_qty: 25
+    - book_id: 4
+      title: Klara and the Sun
+      author: Kazuo Ishiguro
+      isbn: "9780571364886"
+      price: 17.50
+      stock_qty: 18
+    - book_id: 5
+      title: The Song of Achilles
+      author: Madeline Miller
+      isbn: "9780062060624"
+      price: 14.99
+      stock_qty: 50
+    - book_id: 6
+      title: Atomic Habits
+      author: James Clear
+      isbn: "9780735211292"
+      price: 19.99
+      stock_qty: 60
+    - book_id: 7
+      title: Piranesi
+      author: Susanna Clarke
+      isbn: "9781635575637"
+      price: 16.00
+      stock_qty: 12
+    - book_id: 8
+      title: The Seven Husbands of Evelyn Hugo
+      author: Taylor Jenkins Reid
+      isbn: "9781501161933"
+      price: 15.50
+      stock_qty: 33
+
+  # One row per line item. `order_id` is the shared order number a
+  # customer would reference; multiple rows share it for multi-item orders.
+  orders:
+    - order_id: 1001
+      customer_id: 1
+      book_id: 1
+      quantity: 1
+      status: delivered
+      order_date: "2026-07-20"
+      tracking_number: 1Z999AA10123456784
+    - order_id: 1002
+      customer_id: 1
+      book_id: 6
+      quantity: 1
+      status: placed
+      order_date: "2026-08-10"
+      tracking_number: null
+    - order_id: 2001
+      customer_id: 2
+      book_id: 2
+      quantity: 1
+      status: shipped
+      order_date: "2026-08-08"
+      tracking_number: 1Z999BB20123456780
+    - order_id: 2002
+      customer_id: 2
+      book_id: 4
+      quantity: 1
+      status: shipped
+      order_date: "2026-08-11"
+      tracking_number: 1Z999BB20123456781
+    - order_id: 3001
+      customer_id: 3
+      book_id: 5
+      quantity: 1
+      status: delivered
+      order_date: "2026-07-25"
+      tracking_number: 1Z999CC30123456782
+    - order_id: 3001
+      customer_id: 3
+      book_id: 7
+      quantity: 2
+      status: delivered
+      order_date: "2026-07-25"
+      tracking_number: 1Z999CC30123456782
+    - order_id: 4001
+      customer_id: 4
+      book_id: 8
+      quantity: 1
+      status: return_requested
+      order_date: "2026-06-15"
+      tracking_number: 1Z999DD40123456783
+    - order_id: 4002
+      customer_id: 4
+      book_id: 3
+      quantity: 1
+      status: refunded
+      order_date: "2026-05-01"
+      tracking_number: 1Z999DD40123456790

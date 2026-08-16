@@ -1,0 +1,30 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Node (frontend tooling, if ever added)
+node_modules/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+db/data/
+
+# Build artifacts
+dist/
+build/
+*.log
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/

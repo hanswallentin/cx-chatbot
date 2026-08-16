@@ -1,0 +1,74 @@
+# Bookly Customer Support Agent — local dev cluster.
+#
+# Startup order is enforced via depends_on + healthchecks: db-init (one-shot)
+# -> api -> mcp-server -> backend -> frontend. Every inter-service address is
+# a compose service name via an env var, never localhost/a hard-coded IP, so
+# this file maps onto a commercial cloud (ECS, Azure Container Apps, a
+# managed Compose/Kubernetes host) with service-name DNS doing the same job
+# — see README.md "Deployment" for what specifically changes there.
+
+services:
+  db-init:
+    build: ./db
+    volumes:
+      - dbdata:/data
+      - ./config.yaml:/config.yaml:ro
+    environment:
+      DATABASE_PATH: ${DATABASE_PATH:-/data/bookly.db}
+    restart: "no"
+
+  api:
+    build: ./api
+    volumes:
+      - dbdata:/data
+      - ./config.yaml:/config.yaml:ro
+    environment:
+      DATABASE_PATH: ${DATABASE_PATH:-/data/bookly.db}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    # Not published to the host by default — only mcp-server talks to this
+    # internally. Uncomment for local debugging:
+    # ports: ["8000:8000"]
+
+  mcp-server:
+    build: ./mcp-server
+    volumes:
+      - ./config.yaml:/config.yaml:ro
+    environment:
+      API_BASE_URL: http://api:8000
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      api:
+        condition: service_healthy
+    # ports: ["8100:8100"]  # uncomment for local debugging
+
+  backend:
+    build: ./backend
+    volumes:
+      - ./config.yaml:/config.yaml:ro
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      MCP_SERVER_URL: http://mcp-server:8100
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      mcp-server:
+        condition: service_healthy
+    ports:
+      - "8200:8200"  # direct access for debugging; remove behind a real gateway in prod
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  # The one stateful piece of this stack. In production, swap this whole
+  # service + volume for a managed database (RDS/Cloud SQL Postgres) and
+  # point api's DATABASE_PATH/connection string at it instead — every other
+  # service is stateless and can scale horizontally as-is.
+  dbdata:
