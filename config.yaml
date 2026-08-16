@@ -197,6 +197,626 @@ seed:
       price: 15.50
       stock_qty: 33
 
+    # Additional catalog sourced from Penguin Books UK bestseller/genre
+    # listings (penguin.co.uk), added for broader genre coverage.
+    # Fiction
+    - book_id: 9
+      title: "The Correspondent"
+      author: "Virginia Evans"
+      isbn: "9781405971553"
+      price: 9.99
+      stock_qty: 18
+    - book_id: 10
+      title: "We All Live Here"
+      author: "Jojo Moyes"
+      isbn: "9781405943475"
+      price: 9.99
+      stock_qty: 7
+    # Crime & Thrillers
+    - book_id: 11
+      title: "The Secret of Secrets"
+      author: "Dan Brown"
+      isbn: "9780552178013"
+      price: 9.99
+      stock_qty: 39
+    - book_id: 12
+      title: "The Family Friend"
+      author: "Claire Douglas"
+      isbn: "9781405978972"
+      price: 9.99
+      stock_qty: 35
+    - book_id: 13
+      title: "The Lizard"
+      author: "LJ Ross"
+      isbn: "9781804960431"
+      price: 9.99
+      stock_qty: 32
+    - book_id: 14
+      title: "The Impossible Fortune"
+      author: "Richard Osman"
+      isbn: "9781405975735"
+      price: 9.99
+      stock_qty: 21
+    - book_id: 15
+      title: "We Solve Murders"
+      author: "Richard Osman"
+      isbn: "9780241997482"
+      price: 9.99
+      stock_qty: 17
+    - book_id: 16
+      title: "Dead Heat"
+      author: "Sabine Durrant"
+      isbn: "9781804954645"
+      price: 9.99
+      stock_qty: 15
+    - book_id: 17
+      title: "Exit Strategy"
+      author: "Lee Child and Andrew Child"
+      isbn: "9781804993682"
+      price: 9.99
+      stock_qty: 58
+    - book_id: 18
+      title: "Don't Let Him In"
+      author: "Lisa Jewell"
+      isbn: "9781804940266"
+      price: 9.99
+      stock_qty: 8
+    # Fantasy
+    - book_id: 19
+      title: "Odyssey"
+      author: "Stephen Fry"
+      isbn: "9781405948425"
+      price: 10.99
+      stock_qty: 7
+    - book_id: 20
+      title: "Adversary to the Villain"
+      author: "Hannah Nicole Maehrer"
+      isbn: "9781804999677"
+      price: 9.99
+      stock_qty: 15
+    - book_id: 21
+      title: "Steelborn"
+      author: "Taylor J. LaRue"
+      isbn: "9780857509147"
+      price: 22.00
+      stock_qty: 31
+    - book_id: 22
+      title: "Shield of Sparrows"
+      author: "Devney Perry"
+      isbn: "9781911750031"
+      price: 9.99
+      stock_qty: 33
+    - book_id: 23
+      title: "The Castle and the Cloister"
+      author: "Laura E. Weymouth"
+      isbn: "9781529958461"
+      price: 20.00
+      stock_qty: 68
+    - book_id: 24
+      title: "The Rose Field: The Book of Dust Volume Three"
+      author: "Philip Pullman and Christopher Wormell"
+      isbn: "9780241458716"
+      price: 10.99
+      stock_qty: 7
+    - book_id: 25
+      title: "Mythos"
+      author: "Stephen Fry"
+      isbn: "9781405934138"
+      price: 10.99
+      stock_qty: 29
+    - book_id: 26
+      title: "Dungeon Crawler Carl"
+      author: "Matt Dinniman"
+      isbn: "9780241816264"
+      price: 22.00
+      stock_qty: 57
+    # Science Fiction
+    - book_id: 27
+      title: "What We Can Know"
+      author: "Ian McEwan"
+      isbn: "9781529959208"
+      price: 16.99
+      stock_qty: 32
+    - book_id: 28
+      title: "I Who Have Never Known Men"
+      author: "Jacqueline Harpman"
+      isbn: "9781529954463"
+      price: 16.99
+      stock_qty: 61
+    - book_id: 29
+      title: "The Martian"
+      author: "Andy Weir"
+      isbn: "9781529993196"
+      price: 29.99
+      stock_qty: 39
+    - book_id: 30
+      title: "Carl's Doomsday Scenario"
+      author: "Matt Dinniman"
+      isbn: "9780241816219"
+      price: 22.00
+      stock_qty: 4
+    - book_id: 31
+      title: "Jurassic Park"
+      author: "Michael Crichton"
+      isbn: "9781784752224"
+      price: 9.99
+      stock_qty: 24
+    - book_id: 32
+      title: "Artemis"
+      author: "Andy Weir"
+      isbn: "9781785030253"
+      price: 10.99
+      stock_qty: 58
+    # Romance
+    - book_id: 33
+      title: "The Lies We Steal"
+      author: "Monty Jay"
+      isbn: "9781911746874"
+      price: 9.99
+      stock_qty: 47
+    - book_id: 34
+      title: "The Truths We Burn"
+      author: "Monty Jay"
+      isbn: "9781911746881"
+      price: 9.99
+      stock_qty: 39
+    - book_id: 35
+      title: "Three Summers"
+      author: "Karen Swan"
+      isbn: "9781804996843"
+      price: 9.99
+      stock_qty: 23
+    - book_id: 36
+      title: "Great Big Beautiful Life"
+      author: "Emily Henry"
+      isbn: "9781405974738"
+      price: 9.99
+      stock_qty: 31
+    - book_id: 37
+      title: "The Last Letter"
+      author: "Rebecca Yarros"
+      isbn: "9781804992425"
+      price: 9.99
+      stock_qty: 47
+    # Young Adult
+    - book_id: 38
+      title: "The Summer I Turned Pretty"
+      author: "Jenny Han"
+      isbn: "9780241599198"
+      price: 9.99
+      stock_qty: 17
+    - book_id: 39
+      title: "The Inheritance Games"
+      author: "Jennifer Lynn Barnes"
+      isbn: "9780241764022"
+      price: 20.00
+      stock_qty: 15
+    - book_id: 40
+      title: "One of Us Is Lying"
+      author: "Karen M. McManus"
+      isbn: "9780141375632"
+      price: 9.99
+      stock_qty: 52
+    - book_id: 41
+      title: "Paint Me Like Your Dead Girls"
+      author: "Cynthia Murphy"
+      isbn: "9780241712818"
+      price: 9.99
+      stock_qty: 16
+    - book_id: 42
+      title: "The Odyssey"
+      author: "Geraldine McCaughrean"
+      isbn: "9780241791479"
+      price: 14.99
+      stock_qty: 49
+    - book_id: 43
+      title: "The Hawthorne Legacy"
+      author: "Jennifer Lynn Barnes"
+      isbn: "9780241765876"
+      price: 20.00
+      stock_qty: 48
+    - book_id: 44
+      title: "The Final Gambit"
+      author: "Jennifer Lynn Barnes"
+      isbn: "9780241765869"
+      price: 20.00
+      stock_qty: 37
+    - book_id: 45
+      title: "Shadow Reaper"
+      author: "Lynette Noni"
+      isbn: "9780241747117"
+      price: 9.99
+      stock_qty: 9
+    # Children's
+    - book_id: 46
+      title: "Lottie Brooks vs The Ultra Mean Girls"
+      author: "Katie Kirby"
+      isbn: "9780241647233"
+      price: 8.99
+      stock_qty: 62
+    - book_id: 47
+      title: "Comfy Corner"
+      author: "Coco Wyo"
+      isbn: "9780241805886"
+      price: 7.99
+      stock_qty: 19
+    - book_id: 48
+      title: "Cozy Corner"
+      author: "Coco Wyo"
+      isbn: "9780241764220"
+      price: 7.99
+      stock_qty: 52
+    - book_id: 49
+      title: "The Seriously Epic Holiday of Lottie Brooks"
+      author: "Katie Kirby"
+      isbn: "9780241769249"
+      price: 14.99
+      stock_qty: 14
+    - book_id: 50
+      title: "Diary of a Wimpy Kid: Hot Mess (Book 19)"
+      author: "Jeff Kinney"
+      isbn: "9780241583180"
+      price: 7.99
+      stock_qty: 41
+    - book_id: 51
+      title: "Spooky Cutie"
+      author: "Coco Wyo"
+      isbn: "9780241808986"
+      price: 7.99
+      stock_qty: 50
+    # Biography & Memoir
+    - book_id: 52
+      title: "Nobody's Girl"
+      author: "Virginia Roberts Giuffre"
+      isbn: "9781837320882"
+      price: 10.99
+      stock_qty: 28
+    - book_id: 53
+      title: "Mother Mary Comes To Me"
+      author: "Arundhati Roy"
+      isbn: "9781405978477"
+      price: 12.99
+      stock_qty: 12
+    - book_id: 54
+      title: "Diddly Squat: The Farmer's Dog"
+      author: "Jeremy Clarkson"
+      isbn: "9781405981972"
+      price: 10.99
+      stock_qty: 9
+    - book_id: 55
+      title: "The Four Wives of Windsor"
+      author: "Simon Vigar"
+      isbn: "9781529985276"
+      price: 22.00
+      stock_qty: 33
+    - book_id: 56
+      title: "Everything I Know About Love"
+      author: "Dolly Alderton"
+      isbn: "9780241735206"
+      price: 20.00
+      stock_qty: 41
+    - book_id: 57
+      title: "The Trading Game"
+      author: "Gary Stevenson"
+      isbn: "9781802062731"
+      price: 12.99
+      stock_qty: 14
+    - book_id: 58
+      title: "All the Medals Have Been Handed Out"
+      author: "Guy Martin"
+      isbn: "9781529968026"
+      price: 22.00
+      stock_qty: 33
+    - book_id: 59
+      title: "Poor"
+      author: "Katriona O'Sullivan"
+      isbn: "9780241996768"
+      price: 10.99
+      stock_qty: 16
+    - book_id: 60
+      title: "Diddly Squat"
+      author: "Jeremy Clarkson"
+      isbn: "9781405946537"
+      price: 10.99
+      stock_qty: 52
+    # Cookery
+    - book_id: 61
+      title: "BBQ"
+      author: "Jamie Oliver"
+      isbn: "9780241797075"
+      price: 30.00
+      stock_qty: 39
+    - book_id: 62
+      title: "The Curry Bible"
+      author: "Nisha Katona"
+      isbn: "9780241811115"
+      price: 28.00
+      stock_qty: 62
+    - book_id: 63
+      title: "Ottolenghi SIMPLE"
+      author: "Yotam Ottolenghi"
+      isbn: "9781785031168"
+      price: 30.00
+      stock_qty: 50
+    - book_id: 64
+      title: "The 30g Plan Cookbook"
+      author: "Emma Bardwell"
+      isbn: "9781785046469"
+      price: 20.00
+      stock_qty: 24
+    - book_id: 65
+      title: "The Farm Table"
+      author: "Julius Roberts"
+      isbn: "9781529198997"
+      price: 27.00
+      stock_qty: 51
+    - book_id: 66
+      title: "The Greatest Traybake Cookbook Ever"
+      author: "John Gregory-Smith"
+      isbn: "9780241746417"
+      price: 25.00
+      stock_qty: 49
+    - book_id: 67
+      title: "Easy Air Fryer"
+      author: "Jamie Oliver"
+      isbn: "9780241733431"
+      price: 26.00
+      stock_qty: 30
+    - book_id: 68
+      title: "Eat The Food You Buy"
+      author: "Martyn Odell"
+      isbn: "9780241776865"
+      price: 25.00
+      stock_qty: 38
+    # History
+    - book_id: 69
+      title: "The Idaho Murders"
+      author: "James Patterson"
+      isbn: "9781804949542"
+      price: 10.99
+      stock_qty: 13
+    - book_id: 70
+      title: "Biological War"
+      author: "Annie Jacobsen"
+      isbn: "9781911742029"
+      price: 22.00
+      stock_qty: 25
+    - book_id: 71
+      title: "Nuclear War"
+      author: "Annie Jacobsen"
+      isbn: "9781804996003"
+      price: 10.99
+      stock_qty: 35
+    - book_id: 72
+      title: "Hiroshima, 8:15"
+      author: "Kiyoshi Tanimoto"
+      isbn: "9781529992731"
+      price: 16.99
+      stock_qty: 24
+    - book_id: 73
+      title: "Unruly"
+      author: "David Mitchell"
+      isbn: "9781405953191"
+      price: 11.99
+      stock_qty: 63
+    - book_id: 74
+      title: "Story of a Murder"
+      author: "Hallie Rubenhold"
+      isbn: "9781804992920"
+      price: 10.99
+      stock_qty: 52
+    - book_id: 75
+      title: "Man's Search For Meaning"
+      author: "Viktor E. Frankl"
+      isbn: "9781846046384"
+      price: 12.99
+      stock_qty: 38
+    # Classics
+    - book_id: 76
+      title: "The Odyssey"
+      author: "Homer"
+      isbn: "9780141192444"
+      price: 18.99
+      stock_qty: 32
+    - book_id: 77
+      title: "White Nights"
+      author: "Fyodor Dostoyevsky"
+      isbn: "9780241252086"
+      price: 5.00
+      stock_qty: 45
+    - book_id: 78
+      title: "East of Eden"
+      author: "John Steinbeck"
+      isbn: "9780141185071"
+      price: 12.99
+      stock_qty: 11
+    - book_id: 79
+      title: "The Handmaid's Tale"
+      author: "Margaret Atwood"
+      isbn: "9780099511663"
+      price: 9.99
+      stock_qty: 33
+    - book_id: 80
+      title: "Nineteen Eighty-Four"
+      author: "George Orwell"
+      isbn: "9780241453513"
+      price: 16.99
+      stock_qty: 8
+    - book_id: 81
+      title: "The Count of Monte Cristo"
+      author: "Alexandre Dumas"
+      isbn: "9780141392462"
+      price: 25.00
+      stock_qty: 44
+    - book_id: 82
+      title: "Giovanni's Room"
+      author: "James Baldwin"
+      isbn: "9780241718599"
+      price: 16.99
+      stock_qty: 55
+    - book_id: 83
+      title: "Animal Farm"
+      author: "George Orwell"
+      isbn: "9780241453865"
+      price: 14.99
+      stock_qty: 38
+    # Poetry
+    - book_id: 84
+      title: "The Iliad"
+      author: "Homer"
+      isbn: "9780141394657"
+      price: 20.00
+      stock_qty: 12
+    - book_id: 85
+      title: "Selected Poems"
+      author: "Mary Oliver"
+      isbn: "9780241810187"
+      price: 14.99
+      stock_qty: 31
+    - book_id: 86
+      title: "Heroes"
+      author: "Stephen Fry"
+      isbn: "9781405940368"
+      price: 10.99
+      stock_qty: 44
+    - book_id: 87
+      title: "The Aeneid"
+      author: "Virgil"
+      isbn: "9780141996332"
+      price: 16.99
+      stock_qty: 31
+    - book_id: 88
+      title: "The Divine Comedy"
+      author: "Dante Alighieri"
+      isbn: "9780141197494"
+      price: 12.99
+      stock_qty: 67
+    # Graphic Novels & Comics
+    - book_id: 89
+      title: "The Dream Thieves"
+      author: "Maggie Stiefvater and Sas Milledge"
+      isbn: "9780241762295"
+      price: 25.00
+      stock_qty: 54
+    - book_id: 90
+      title: "Persepolis I & II"
+      author: "Marjane Satrapi"
+      isbn: "9781784879099"
+      price: 12.99
+      stock_qty: 62
+    - book_id: 91
+      title: "The Amazing Spider-Man"
+      author: "Stan Lee and Steve Ditko"
+      isbn: "9780143135739"
+      price: 25.00
+      stock_qty: 22
+    - book_id: 92
+      title: "The Complete MAUS"
+      author: "Art Spiegelman"
+      isbn: "9780141014081"
+      price: 16.99
+      stock_qty: 37
+    - book_id: 93
+      title: "The Neverending Book"
+      author: "Naoki Matayoshi and Shinsuke Yoshitake"
+      isbn: "9780241651506"
+      price: 16.99
+      stock_qty: 21
+    - book_id: 94
+      title: "Heaven Official's Blessing (The Comic): Volume 2"
+      author: "Mo Xiang Tong Xiu and STARember"
+      isbn: "9781911741008"
+      price: 22.00
+      stock_qty: 35
+    # Business & Finance
+    - book_id: 95
+      title: "1929"
+      author: "Andrew Ross Sorkin"
+      isbn: "9780141994970"
+      price: 12.99
+      stock_qty: 37
+    - book_id: 96
+      title: "The Diary of a CEO"
+      author: "Steven Bartlett"
+      isbn: "9781529146523"
+      price: 10.99
+      stock_qty: 58
+    - book_id: 97
+      title: "Surrounded by Idiots"
+      author: "Thomas Erikson"
+      isbn: "9781785046209"
+      price: 10.99
+      stock_qty: 55
+    - book_id: 98
+      title: "Empire of AI"
+      author: "Karen Hao"
+      isbn: "9781802064650"
+      price: 12.99
+      stock_qty: 50
+    - book_id: 99
+      title: "Never Split the Difference"
+      author: "Chris Voss and Tahl Raz"
+      isbn: "9781847941497"
+      price: 11.99
+      stock_qty: 32
+    # Self-Help
+    - book_id: 100
+      title: "How Lucky Am I"
+      author: "Christian Watson"
+      isbn: "9781529984781"
+      price: 20.00
+      stock_qty: 21
+    - book_id: 101
+      title: "The Body Keeps the Score"
+      author: "Bessel van der Kolk"
+      isbn: "9780141978611"
+      price: 14.99
+      stock_qty: 69
+    - book_id: 102
+      title: "Always Remember"
+      author: "Charlie Mackesy"
+      isbn: "9781529108446"
+      price: 22.00
+      stock_qty: 67
+    - book_id: 103
+      title: "Ultra-Processed People"
+      author: "Chris van Tulleken"
+      isbn: "9781529160222"
+      price: 11.99
+      stock_qty: 15
+    # Popular Science
+    - book_id: 104
+      title: "The Book of Birds"
+      author: "Robert Macfarlane and Jackie Morris"
+      isbn: "9780241404737"
+      price: 35.00
+      stock_qty: 10
+    - book_id: 105
+      title: "The Book You Wish Your Parents Had Read"
+      author: "Philippa Perry"
+      isbn: "9780241251027"
+      price: 11.99
+      stock_qty: 18
+    - book_id: 106
+      title: "Is a River Alive?"
+      author: "Robert Macfarlane"
+      isbn: "9780241998212"
+      price: 11.99
+      stock_qty: 23
+    # Action & Adventure
+    - book_id: 107
+      title: "Crash"
+      author: "Belinda Bauer"
+      isbn: "9781837320646"
+      price: 9.99
+      stock_qty: 24
+    - book_id: 108
+      title: "Murder Island"
+      author: "James Patterson"
+      isbn: "9781529159684"
+      price: 9.99
+      stock_qty: 58
+
   # One row per line item. `order_id` is the shared order number a
   # customer would reference; multiple rows share it for multi-item orders.
   orders:
