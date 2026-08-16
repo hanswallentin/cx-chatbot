@@ -54,9 +54,57 @@ The compose file is written to be portable with minimal change:
 - **The one stateful piece is the database.** For a real deployment, swap the `db-init` + SQLite-volume setup for a managed Postgres instance (RDS, Cloud SQL, Azure Database for PostgreSQL): point `api`'s `DATABASE_PATH`/connection handling at the managed instance's connection string (injected as a secret), run the schema/seed once as a migration step instead of a `db-init` container, and drop the `dbdata` volume. `api/app/db.py` is the only file that would need a real driver swap (e.g. `psycopg`) since it's the only thing that touches the database.
 - Container images built from these five `Dockerfile`s are what you push to your registry (ECR/ACR/GCR) — the compose file's `build:` stanzas become `image:` references pointing at the registry in a cloud-targeted compose variant, or get translated by your platform's compose-import tooling (e.g. the ECS CLI's `compose` integration).
 
-## Setup
+## Prerequisites
 
-Prerequisites: Docker Engine + Docker Compose v2 (the `docker compose` CLI plugin, not the standalone `docker-compose` v1).
+Everything the chatbot itself needs (FastAPI, the OpenAI SDK, the MCP SDK, etc.) is declared in each service's `requirements.txt` and installed automatically inside its Docker image when you build the stack — you never install those by hand. What you need on your own machine is the tooling to build and run the containers, plus a couple of optional tools if you want to develop outside Docker.
+
+### Required — to run the full stack
+
+| Tool | Why | Check it's installed |
+|---|---|---|
+| **Docker Engine** (daemon running) | Builds and runs all 5 services | `docker --version` |
+| **Docker Compose v2** (the `docker compose` CLI plugin — not standalone `docker-compose` v1) | Orchestrates the 5-service stack | `docker compose version` |
+| **Git** | Clone this repo | `git --version` |
+
+**macOS**
+```bash
+# pick one Docker runtime:
+brew install --cask docker     # Docker Desktop (bundles Compose v2)
+# or a lighter-weight alternative:
+brew install --cask orbstack   # OrbStack (Docker-compatible, also bundles Compose v2)
+
+brew install git                # only if `git --version` doesn't already work
+```
+Start Docker Desktop/OrbStack at least once (they run a background daemon) before `docker compose up`.
+
+**Linux (Debian/Ubuntu)**
+```bash
+curl -fsSL https://get.docker.com | sudo sh   # installs Docker Engine + the Compose v2 plugin
+sudo usermod -aG docker "$USER"               # run docker without sudo — log out/in afterward
+sudo systemctl enable --now docker            # start the daemon and enable it on boot
+sudo apt-get install -y git
+```
+Other distros: follow Docker's official install guide for your package manager (Fedora/RHEL: `dnf install docker docker-compose-plugin`; Arch: `pacman -S docker docker-compose`), then `systemctl enable --now docker`.
+
+### Optional — for local development outside Docker
+
+Only needed for `./scripts/test.sh` or running a single service directly with `uvicorn` (see the FAQ below) instead of through `docker compose`.
+
+| Tool | Why | Check it's installed |
+|---|---|---|
+| **Python 3.12+** (with `venv` and `pip`, both bundled with a standard Python install) | `scripts/test.sh` creates a local virtualenv and runs the pytest suite | `python3 --version` |
+
+**macOS**
+```bash
+brew install python@3.12
+```
+
+**Linux (Debian/Ubuntu)**
+```bash
+sudo apt-get install -y python3 python3-venv python3-pip
+```
+
+## Setup
 
 ```bash
 git clone <this repo>
