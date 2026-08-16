@@ -23,7 +23,6 @@ db/data/
 dist/
 build/
 *.log
-deck/*.pptx
 
 # Editors / OS
 .DS_Store
