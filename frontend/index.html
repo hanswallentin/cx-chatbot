@@ -20,6 +20,7 @@
     --bubble-agent: #f1e6d4;
     --border: #e4d5bd;
     --gold: #b4863f;
+    --error: #a3372a;
   }
 
   * { box-sizing: border-box; }
@@ -97,6 +98,87 @@
     font-family: Georgia, "Palatino Linotype", serif;
   }
 
+  /* ---- Identity gate ---- */
+  #identity-gate {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 32px 30px;
+    background:
+      linear-gradient(180deg, rgba(122,74,43,0.03), transparent 80px),
+      var(--paper);
+    text-align: center;
+  }
+  #identity-gate .gate-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--accent-light), var(--accent) 60%, var(--accent-dark));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(94, 56, 32, 0.3);
+    margin-bottom: 6px;
+  }
+  #identity-gate .gate-icon svg { width: 26px; height: 26px; }
+  #identity-gate h2 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    color: var(--accent-dark);
+    margin: 0;
+    font-size: 20px;
+  }
+  #identity-gate .gate-sub {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0 0 14px;
+    max-width: 360px;
+  }
+  #identity-form {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .field { text-align: left; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin-bottom: 5px;
+  }
+  .field input {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14.5px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field input:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(122, 74, 43, 0.12);
+  }
+  .field input.invalid { border-color: var(--error); }
+  .field-error {
+    min-height: 16px;
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  #identity-form .submit-btn {
+    width: 100%;
+    border-radius: 10px;
+    height: 44px;
+    font-size: 14.5px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+
   #messages {
     flex: 1;
     overflow-y: auto;
@@ -135,6 +217,17 @@
   }
   .msg.user { justify-content: flex-end; }
 
+  .msg-col { display: flex; flex-direction: column; max-width: 74%; }
+  .msg.user .msg-col { align-items: flex-end; }
+  .msg.agent .msg-col { align-items: flex-start; }
+
+  .name-tag {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    padding: 0 4px;
+  }
+
   .avatar {
     flex: none;
     width: 26px; height: 26px;
@@ -154,7 +247,6 @@
   }
 
   .bubble {
-    max-width: 74%;
     padding: 11px 15px;
     border-radius: 16px;
     line-height: 1.48;
@@ -186,7 +278,7 @@
   .typing .dot:nth-child(3) { animation-delay: 0.3s; }
   @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 0.9; } }
 
-  form {
+  form#chat-form {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -225,6 +317,79 @@
   button:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
   button:hover:not(:disabled) { filter: brightness(1.05); }
   button:active:not(:disabled) { transform: scale(0.94); }
+
+  /* ---- Bottom logout bar ---- */
+  #logout-bar {
+    padding: 8px 16px 12px;
+    background: #fbf6ec;
+    display: flex;
+    justify-content: center;
+  }
+  #logout-btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: background 0.15s, color 0.15s;
+  }
+  #logout-btn:hover { background: rgba(122,74,43,0.08); color: var(--accent-dark); }
+
+  /* ---- Confirm modal ---- */
+  #modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(43, 30, 15, 0.38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    animation: fadeIn 0.15s ease both;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-card {
+    width: 100%;
+    max-width: 300px;
+    background: var(--panel);
+    border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(43, 30, 15, 0.35);
+    padding: 22px 22px 18px;
+    text-align: center;
+  }
+  .modal-card h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    color: var(--accent-dark);
+    margin: 0 0 8px;
+    font-size: 17px;
+  }
+  .modal-card p {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button {
+    flex: 1;
+    width: auto;
+    height: 38px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+  .modal-actions .btn-cancel {
+    background: var(--bubble-agent);
+    color: var(--accent-dark);
+    box-shadow: none;
+  }
+  .modal-actions .btn-ok {
+    background: linear-gradient(160deg, var(--accent-light), var(--accent));
+    color: var(--accent-ink);
+  }
+
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -241,8 +406,33 @@
         <p>Orders · Returns · Books · Account help</p>
       </div>
     </header>
-    <div id="messages"></div>
-    <form id="chat-form">
+
+    <div id="identity-gate">
+      <div class="gate-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 5.5c2.5-1.5 5-1.5 8 0v13c-3-1.5-5.5-1.5-8 0v-13z" stroke="#fffaf2" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M20 5.5c-2.5-1.5-5-1.5-8 0v13c3-1.5 5.5-1.5 8 0v-13z" stroke="#fffaf2" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>Welcome to Bookly Support</h2>
+      <p class="gate-sub">Before we get started, could you tell us your name and email address?</p>
+      <form id="identity-form" novalidate>
+        <div class="field">
+          <label for="name-input">Name</label>
+          <input id="name-input" type="text" placeholder="Your full name" autocomplete="name" />
+          <div class="field-error" id="name-error"></div>
+        </div>
+        <div class="field">
+          <label for="email-input">Email address</label>
+          <input id="email-input" type="email" placeholder="you@example.com" autocomplete="email" />
+          <div class="field-error" id="email-error"></div>
+        </div>
+        <button class="submit-btn" type="submit">Start chatting</button>
+      </form>
+    </div>
+
+    <div id="messages" class="hidden"></div>
+    <form id="chat-form" class="hidden">
       <input id="input" type="text" placeholder="Ask about an order, a return, or a book…" autocomplete="off" />
       <button id="send" type="submit" aria-label="Send message">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -250,31 +440,110 @@
         </svg>
       </button>
     </form>
+    <div id="logout-bar" class="hidden">
+      <button id="logout-btn" type="button">Log Out</button>
+    </div>
+
+    <div id="modal-overlay" class="hidden">
+      <div class="modal-card">
+        <h3>Are you sure?</h3>
+        <p>Logging out will end your current conversation and ask for your name and email again.</p>
+        <div class="modal-actions">
+          <button class="btn-cancel" type="button" id="modal-cancel">Cancel</button>
+          <button class="btn-ok" type="button" id="modal-ok">OK</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 <script>
-  const sessionId = "web-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const identityGateEl = document.getElementById("identity-gate");
+  const identityFormEl = document.getElementById("identity-form");
+  const nameInputEl = document.getElementById("name-input");
+  const emailInputEl = document.getElementById("email-input");
+  const nameErrorEl = document.getElementById("name-error");
+  const emailErrorEl = document.getElementById("email-error");
+
   const messagesEl = document.getElementById("messages");
-  const formEl = document.getElementById("chat-form");
+  const chatFormEl = document.getElementById("chat-form");
   const inputEl = document.getElementById("input");
   const sendEl = document.getElementById("send");
+  const logoutBarEl = document.getElementById("logout-bar");
+  const logoutBtnEl = document.getElementById("logout-btn");
+
+  const modalOverlayEl = document.getElementById("modal-overlay");
+  const modalCancelEl = document.getElementById("modal-cancel");
+  const modalOkEl = document.getElementById("modal-ok");
 
   const AGENT_AVATAR = '<div class="avatar"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5c2.5-1.5 5-1.5 8 0v13c-3-1.5-5.5-1.5-8 0v-13z" stroke="#fffaf2" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 5.5c-2.5-1.5-5-1.5-8 0v13c3-1.5 5.5-1.5 8 0v-13z" stroke="#fffaf2" stroke-width="1.6" stroke-linejoin="round"/></svg></div>';
   const USER_AVATAR = '<div class="avatar">You</div>';
 
+  let sessionId = newSessionId();
+  let currentUser = null; // { name, email }
+
+  function newSessionId() {
+    return "web-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
   function softScrollToBottom() {
     messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+  }
+
+  function firstNameOf(fullName) {
+    return fullName.trim().split(/\s+/)[0] || fullName;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   function addBubble(text, who) {
     const row = document.createElement("div");
     row.className = "msg " + who;
     row.innerHTML = who === "agent" ? AGENT_AVATAR : "";
+
+    const col = document.createElement("div");
+    col.className = "msg-col";
+
     const bubble = document.createElement("div");
     bubble.className = "bubble";
     bubble.textContent = text;
-    row.appendChild(bubble);
+    col.appendChild(bubble);
+
+    if (who === "user" && currentUser) {
+      const tag = document.createElement("div");
+      tag.className = "name-tag";
+      tag.textContent = firstNameOf(currentUser.name);
+      col.appendChild(tag);
+    }
+
+    row.appendChild(col);
     if (who === "user") row.insertAdjacentHTML("beforeend", USER_AVATAR);
+    messagesEl.appendChild(row);
+    softScrollToBottom();
+    return row;
+  }
+
+  function addGreetingBubble(firstName, email) {
+    const row = document.createElement("div");
+    row.className = "msg agent";
+    row.innerHTML = AGENT_AVATAR;
+
+    const col = document.createElement("div");
+    col.className = "msg-col";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML =
+      `Hi <strong>${escapeHtml(firstName)}</strong>! Welcome to Bookly Support — I have your email as <em>${escapeHtml(email)}</em>. ` +
+      "How can I help you today? I can look into an order, start a return, or answer a question about our books, shipping, or your account.";
+    col.appendChild(bubble);
+
+    row.appendChild(col);
     messagesEl.appendChild(row);
     softScrollToBottom();
     return row;
@@ -289,9 +558,64 @@
     return row;
   }
 
-  addBubble("Hi! I'm the Bookly support assistant. I can help with order status, returns, book questions, or your account. What can I help with today?", "agent");
+  function startConversation(name, email) {
+    currentUser = { name, email };
+    identityGateEl.classList.add("hidden");
+    messagesEl.classList.remove("hidden");
+    chatFormEl.classList.remove("hidden");
+    logoutBarEl.classList.remove("hidden");
+    messagesEl.innerHTML = "";
+    addGreetingBubble(firstNameOf(name), email);
+    inputEl.focus();
+  }
 
-  formEl.addEventListener("submit", async (e) => {
+  function resetToIdentityGate() {
+    currentUser = null;
+    sessionId = newSessionId();
+    messagesEl.innerHTML = "";
+    chatFormEl.classList.add("hidden");
+    messagesEl.classList.add("hidden");
+    logoutBarEl.classList.add("hidden");
+    identityFormEl.reset();
+    nameErrorEl.textContent = "";
+    emailErrorEl.textContent = "";
+    nameInputEl.classList.remove("invalid");
+    emailInputEl.classList.remove("invalid");
+    identityGateEl.classList.remove("hidden");
+    nameInputEl.focus();
+  }
+
+  identityFormEl.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = nameInputEl.value.trim();
+    const email = emailInputEl.value.trim();
+
+    let valid = true;
+    nameErrorEl.textContent = "";
+    emailErrorEl.textContent = "";
+    nameInputEl.classList.remove("invalid");
+    emailInputEl.classList.remove("invalid");
+
+    if (!name) {
+      nameErrorEl.textContent = "Please tell us your name.";
+      nameInputEl.classList.add("invalid");
+      valid = false;
+    }
+    if (!email) {
+      emailErrorEl.textContent = "Please enter your email address.";
+      emailInputEl.classList.add("invalid");
+      valid = false;
+    } else if (!EMAIL_RE.test(email)) {
+      emailErrorEl.textContent = "That doesn't look like a valid email address.";
+      emailInputEl.classList.add("invalid");
+      valid = false;
+    }
+
+    if (!valid) return;
+    startConversation(name, email);
+  });
+
+  chatFormEl.addEventListener("submit", async (e) => {
     e.preventDefault();
     const text = inputEl.value.trim();
     if (!text) return;
@@ -307,7 +631,12 @@
       const resp = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId, message: text }),
+        body: JSON.stringify({
+          session_id: sessionId,
+          message: text,
+          customer_name: currentUser ? currentUser.name : null,
+          customer_email: currentUser ? currentUser.email : null,
+        }),
       });
       typingRow.remove();
       if (!resp.ok) {
@@ -325,6 +654,25 @@
       inputEl.focus();
     }
   });
+
+  logoutBtnEl.addEventListener("click", () => {
+    modalOverlayEl.classList.remove("hidden");
+  });
+
+  modalCancelEl.addEventListener("click", () => {
+    modalOverlayEl.classList.add("hidden");
+  });
+
+  modalOkEl.addEventListener("click", () => {
+    modalOverlayEl.classList.add("hidden");
+    resetToIdentityGate();
+  });
+
+  modalOverlayEl.addEventListener("click", (e) => {
+    if (e.target === modalOverlayEl) modalOverlayEl.classList.add("hidden");
+  });
+
+  nameInputEl.focus();
 </script>
 </body>
 </html>

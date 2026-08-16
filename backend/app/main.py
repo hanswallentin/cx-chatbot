@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from typing import Optional
 
 from fastapi import FastAPI
 from openai import AsyncOpenAI
@@ -81,6 +82,9 @@ app = FastAPI(title="Bookly Support Backend", lifespan=lifespan)
 class ChatRequest(BaseModel):
     session_id: str
     message: str
+    # Collected once by the frontend's identity form at the start of a session.
+    customer_name: Optional[str] = None
+    customer_email: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
@@ -95,5 +99,7 @@ def health() -> dict:
 @app.post("/chat", response_model=ChatResponse)
 async def chat(body: ChatRequest) -> ChatResponse:
     orchestrator: Orchestrator = app_state["orchestrator"]
-    reply = await orchestrator.handle_message(body.session_id, body.message)
+    reply = await orchestrator.handle_message(
+        body.session_id, body.message, customer_name=body.customer_name, customer_email=body.customer_email
+    )
     return ChatResponse(reply=reply)
