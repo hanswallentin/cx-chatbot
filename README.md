@@ -1,12 +1,12 @@
 # Bookly Customer Support Agent
 
-A customer support chat agent for Bookly, a fictional online bookstore. Handles order status, returns/refunds, and general policy questions (shipping, returns, password reset) through a real LLM (OpenAI) with tool use, backed by a REST API and SQLite database, and fronted by a single-page chat UI.
+A customer support chat agent for Bookly, a fictional online bookstore. Handles order status, returns/refunds, and general policy questions (shipping, returns, password reset) through a real LLM (OpenAI) with tool use, backed by a REST API and SQLite database, and fronted by a single-page chat UI that collects the customer's name and email up front and greets them by name.
 
 ## Architecture
 
 ```
 frontend (nginx + static HTML/JS)
-   |  POST /api/chat  (proxied)
+   |  identity gate: name + email (validated), then POST /api/chat  (proxied)
    v
 backend/orchestrator (FastAPI)
    |  conversation loop, session state, system prompt, guardrails
@@ -78,6 +78,14 @@ docker compose up --build
 
 Once it's running, go to **http://localhost:8080** — that's the frontend.
 
+## Session & identity
+
+Every conversation starts with a small identity gate: the frontend asks for the customer's name and email before the chat opens, validates the email format client-side (a plain regex — this is a UX nicety, not an auth check), and only then reveals the chat with a personalized greeting ("Hi **Hans**! ... I have your email as *hans.wallentin@gmail.com*"). Each of the customer's own chat bubbles is tagged with their first name.
+
+That name/email is sent to the backend alongside every `/chat` request (`customer_name`/`customer_email` on `ChatRequest`) and folded into the system prompt for that call only (see `Orchestrator._system_prompt_for` in `backend/app/orchestrator.py`) — so the agent already knows who it's talking to and won't ask for the email again mid-conversation. It's never written into persisted conversation history.
+
+A **Log Out** button sits at the bottom of the chat window. It opens an "Are you sure?" confirmation; **Cancel** just closes it, **OK** clears the conversation, mints a new session ID, and returns to the identity gate for a fresh start. All of this is frontend/session state — logging out doesn't call any backend endpoint, it just abandons the old `session_id` (the backend's in-memory history for it simply becomes unreachable, see "Known limitations" below).
+
 ## Configuration
 
 Everything non-secret lives in [config.yaml](config.yaml) at the repo root. Each service loads only the section(s) it needs at startup (via each service's own small `config.py`):
@@ -92,7 +100,7 @@ Everything non-secret lives in [config.yaml](config.yaml) at the repo root. Each
 | `mcp` | mcp-server, backend | tool names/descriptions (also drives the system prompt's tool list) |
 | `policy` | backend | shipping/returns/password-reset FAQ text used in the system prompt |
 | `guardrails` | backend | categories, sensitivity, decline message, logging |
-| `seed` | db-init | customers/books/orders loaded on first run |
+| `seed` | db-init | customers/books/orders loaded on first run (108 books, sourced from real Penguin Books UK bestseller/genre listings across 17 genres) |
 
 **Secrets are never in `config.yaml`.** Instead of a value, secret-bearing keys hold the *name* of an environment variable, e.g. `llm.api_key_env: OPENAI_API_KEY`. The service reads `os.environ[<that name>]`, and the actual value comes from `.env` locally or your cloud provider's secret manager in production — the mapping in `config.yaml` doesn't change between environments, only where the env var's value comes from.
 
@@ -106,7 +114,7 @@ To override a value per environment without touching `config.yaml`: mount a diff
 
 One command, no Docker required: creates/reuses a local `.venv`, installs all three services' dependencies, and runs the full `pytest` suite — API unit tests, MCP tool wrapper tests, and backend conversation + guardrail tests — against disposable fixtures/fakes. See `api/tests/`, `mcp-server/tests/`, `backend/tests/`.
 
-The backend's conversation and guardrail tests use a scripted fake LLM client and a fake MCP client (see `backend/tests/fakes.py`) rather than live model calls, so they're deterministic and don't require `OPENAI_API_KEY`. They specifically cover: a multi-turn return flow that only calls `initiate_return` once order/item/reason are all known, an order-status answer grounded in a tool result, a clarifying question when "my order" is ambiguous, and adversarial prompts (hate speech, violence, sexual content, drugs, off-topic) being blocked before ever reaching a tool call. `backend/tests/test_openai_client.py` separately covers the OpenAI wire-format adapter itself (tool-call parsing, message/history translation) against a fake `AsyncOpenAI`-shaped client.
+The backend's conversation and guardrail tests use a scripted fake LLM client and a fake MCP client (see `backend/tests/fakes.py`) rather than live model calls, so they're deterministic and don't require `OPENAI_API_KEY`. They specifically cover: a multi-turn return flow that only calls `initiate_return` once order/item/reason are all known, an order-status answer grounded in a tool result, a clarifying question when "my order" is ambiguous, and adversarial prompts (hate speech, violence, sexual content, drugs, off-topic) being blocked before ever reaching a tool call. `backend/tests/test_openai_client.py` separately covers the OpenAI wire-format adapter itself (tool-call parsing, message/history translation) against a fake `AsyncOpenAI`-shaped client. `backend/tests/test_customer_context.py` covers the identity-gate integration point — that a known customer name/email gets folded into the system prompt per-call and never leaks into persisted history.
 
 ## FAQ
 
@@ -135,8 +143,11 @@ Edit `guardrails.categories` (add/remove/reword categories), `guardrails.sensiti
 **How do I run the test suite?**
 `./scripts/test.sh` — see "Testing" above.
 
+**How do I start over without reloading the page?**
+Use the **Log Out** button at the bottom of the chat window, confirm "Are you sure?", and the frontend resets to the identity gate with a brand-new session ID — no page reload needed. See "Session & identity" above.
+
 ## Known limitations (prototype scope)
 
 - Session state is in-memory in the backend process — restarting the backend or running multiple replicas loses/splits conversation history. A production version would move this to Redis or a similar shared store.
-- No customer identity verification beyond "what email did you type" — a production version would authenticate the customer before disclosing order details.
+- No real customer identity verification — the frontend's identity gate collects a self-reported name/email (with client-side format checking only) before disclosing order details, not real authentication. A production version would verify identity before that trust boundary.
 - The guardrails classifier's judgment (not just its plumbing) can only be verified live, with a real `OPENAI_API_KEY` configured — the automated test suite proves the wiring and fail-closed behavior deterministically, not the model's classification accuracy.

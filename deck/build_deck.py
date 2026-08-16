@@ -163,7 +163,7 @@ def build_architecture_slide(prs):
 
     # Flow diagram: 6 boxes left to right
     boxes = [
-        ("Frontend", "Single-page chat UI\n(HTML/CSS/JS)"),
+        ("Frontend", "Chat UI + identity gate\n(name/email, HTML/CSS/JS)"),
         ("Backend /\nOrchestrator", "Conversation loop,\nsession state, system prompt"),
         ("LLM\n(tool use)", "The model decides:\nanswer, ask, or call a tool"),
         ("MCP Server", "5 scoped tools —\nnever raw SQL/routes"),
@@ -237,8 +237,8 @@ def build_architecture_slide(prs):
         ("Tools", "The MCP server (backend/app/mcp_client.py + mcp-server/) exposes 5 task-shaped tools "
                   "(search_books, get_customer, find_customer_orders, get_order_status, initiate_return), "
                   "not raw CRUD."),
-        ("Memory", "Per-session conversation history, in-memory in the backend process. Nothing is persisted "
-                   "across restarts — a prototype-scoped choice, called out for production in slide 4."),
+        ("Memory", "Per-session history, in-memory in the backend, plus the identity gate's name/email — "
+                   "folded into the system prompt per call, never persisted. Nothing survives a restart (slide 4)."),
         ("Prompts", "The system prompt (backend/app/prompts.py) scopes the agent to Bookly support, lists the "
                     "live tools, and hard-codes the no-fabrication / ask-don't-assume rules."),
     ]
@@ -345,8 +345,8 @@ def build_next_steps_slide(prs):
          "Durable, concurrent-safe storage that survives a container restart — the compose file already "
          "isolates the DB behind the API layer specifically so this swap doesn't touch the agent."),
         ("Real customer identity verification",
-         "Today, “what's your email” is the only check before disclosing order details. Production "
-         "needs real auth before that trust boundary is crossed."),
+         "Today the identity gate collects a self-reported name/email up front — format-checked, not "
+         "verified. Production needs real auth before that trust boundary is crossed."),
         ("A human escalation path",
          "No way today to hand off to a person when the agent can't help or a customer is upset — a real "
          "deployment needs that safety valve."),
