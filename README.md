@@ -33,7 +33,9 @@ cp .env.example .env
 docker compose up --build
 ```
 
-This brings up, in order (enforced by `depends_on` + healthchecks): `db-init` (one-shot schema + seed) → `api` → `mcp-server` → `backend` → `frontend`. Open `http://localhost:8080`.
+This brings up, in order (enforced by `depends_on` + healthchecks): `db-init` (one-shot schema + seed) → `api` → `mcp-server` → `backend` → `frontend`.
+
+**Accessing the app:** once `frontend` reports healthy (check with `docker compose ps`), open **http://localhost:8080** in a browser — that's the chat UI. The other services aren't meant to be opened directly, but are reachable for debugging: the backend's `/chat` and `/health` endpoints are published at `http://localhost:8200` (see `docker-compose.yml`'s `backend.ports`); `api` and `mcp-server` are internal-only by default (their `ports:` lines are commented out in `docker-compose.yml` — uncomment to expose `8000`/`8100` locally if you need to hit them directly).
 
 To reset everything (including the seeded database) and start clean:
 
@@ -67,6 +69,14 @@ Fill in `.env`:
 - `DATABASE_PATH` / `LOG_LEVEL` — sane defaults are already set; only change if you know why.
 
 First run seeds the database automatically — `db-init` runs once on `docker compose up`, creates the schema, and loads the seed data defined in `config.yaml`'s `seed:` section (customers, books, orders). There's nothing else to run by hand.
+
+Then bring the stack up and open the chat UI:
+
+```bash
+docker compose up --build
+```
+
+Once it's running, go to **http://localhost:8080** — that's the frontend.
 
 ## Configuration
 
